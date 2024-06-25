@@ -103,7 +103,7 @@ function Page() {
         <div className='text-white flex justify-center items-center'>Cantidad de Generos:</div>
         <div className='bg-[#ffffff81] flex justify-center items-center gap-4'>
           {generos.map(gender => (
-            <div key={gender.id}>{gender.name}s: {generoCounts[gender.id] || 0}</div>
+            <div key={gender.id}>{gender.name}s: {generoCounts[gender.id]}</div>
           ))}
         </div>
 
