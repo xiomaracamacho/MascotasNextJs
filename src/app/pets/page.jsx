@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -16,11 +15,14 @@ import btnBack from '../img/btn-back.svg';
 
 function Page() {
   const [pets, setPets] = useState([]);
+  const [generos, setGeneros] = useState([]);
+  const [generoCounts, setGeneroCounts] = useState({});
 
   const getPets = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/mascotas');
       const data = response.data.datos;
+      console.log('Pets data:', data); // Verifica que se obtienen los datos correctos
       setPets(data);
     } catch (error) {
       console.error('Error no se encontraron mascotas:', error);
@@ -50,10 +52,36 @@ function Page() {
     }
   };
 
+  const getGeneros = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/generos');
+      const data = response.data.datos;
+      console.log('Generos data:', data); // Verifica que se obtienen los datos correctos
+      setGeneros(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     getPets();
+    getGeneros();
   }, []);
 
+  useEffect(() => {
+    const countGeneros = () => {
+      const counts = {};
+      generos.forEach(gender => {
+        counts[gender.id] = pets.filter(pet => pet.gender === gender.name).length;
+      });
+      console.log('Counts:', counts); // Verifica los conteos antes de actualizar el estado
+      setGeneroCounts(counts);
+    };
+
+    if (pets.length && generos.length) {
+      countGeneros();
+    }
+  }, [pets, generos]);
 
   return (
     <div className="flex justify-center items-center">
@@ -71,7 +99,14 @@ function Page() {
             <Image src={btnAdd} alt="btn-register" />
           </Link>
         </div>
-      
+
+        <div className='text-white flex justify-center items-center'>Cantidad de Generos:</div>
+        <div className='bg-[#ffffff81] flex justify-center items-center gap-4'>
+          {generos.map(gender => (
+            <div key={gender.id}>{gender.name}s: {generoCounts[gender.id] || 0}</div>
+          ))}
+        </div>
+
         <div className="h-4/5 overflow-y-auto overflow-x-hidden">
           {pets.map((pet) => (
             <div key={pet.id} className="bg-[#ffffff81] rounded-[25px] p-3 flex mb-3">
